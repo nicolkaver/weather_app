@@ -1,83 +1,25 @@
-import React, {ReactNode, useState, ChangeEvent} from "react";
+import React, {useState, ChangeEvent} from "react";
 import { MainWrapper } from "./weather.module";
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import AirIcon from '@mui/icons-material/Air';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box'
-import InputBase from '@mui/material/InputBase';
-import IconButton from '@mui/material/IconButton';
-import Divider from '@mui/material/Divider';
-import TextField from '@mui/material/TextField';
 import { WiHumidity } from "react-icons/wi";
-
-interface ColoredAndBackgroundBoxProps {
-    children: ReactNode;
-  }
-  
-
-const ColoredAndBackgroundBox: React.FC<ColoredAndBackgroundBoxProps> = ({ children }) => {
-    return (
-        <Box
-            component="div"
-            width={300}
-            padding={2}
-            borderRadius={10}
-            style={{
-            backgroundColor: '#f0f0f0',
-            //   backgroundImage: 'url("/path/to/your/image.jpg")',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            }}
-        >
-            {children}
-        </Box>
-    );
-};
-
-const CustomizedTextField = () => {
-    const [inputValue, setInputValue] = useState("");
-    const changeInputValue = (event: ChangeEvent<HTMLInputElement>) =>
-    {
-        setInputValue(event.target.value);
-    };
-
-    const handleButtonClick = () =>
-    {
-        setInputValue("");
-        console.log("Button clicked!");
-    };
-
-    return (
-        <TextField
-            id="outlined-basic"
-            label="Enter city"
-            variant="outlined"
-            size="small"
-            InputProps={{
-                endAdornment: (
-                    <IconButton onClick={handleButtonClick}>
-                        <SearchOutlinedIcon sx={{ color: 'gray' }} />
-                    </IconButton>                ),
-            }}
-            value = {inputValue}
-            onChange={changeInputValue}
-        />
-    );
-}  
+import MainBox from "./MainBox"
+import CustomizedTextField from "./CustomizedTextField"
 
 const DisplayWeather = () =>
 {
-    const [displayedCity, setDisplayedCity] = useState("");
+    const [inputValue, setInputValue] = useState("");
+    const [displayedCity, setDisplayedCity] = useState("Paris");
 
     return (
         <div style={{ backgroundColor: '#a6c8ff', height: '100vh', width: '100vw' }}>
             <MainWrapper>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <ColoredAndBackgroundBox>
-                    <CustomizedTextField />
+                <MainBox>
+                    <CustomizedTextField inputValue={inputValue} setInputValue={setInputValue}
+                                        setDisplayedCity={setDisplayedCity} />
 
                     <div className="weatherArea">
-                        <h1>Auckland</h1>
+                        <h1>{displayedCity}</h1>
                         <span>Nz</span>
                         <div className="icon">
                             icon
@@ -103,7 +45,7 @@ const DisplayWeather = () =>
                             </div>
                         </div>
                     </div>
-                </ColoredAndBackgroundBox>
+                </MainBox>
                 </div>
             </MainWrapper>
         </div>
