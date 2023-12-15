@@ -32,14 +32,15 @@ const CustomizedTextField = (props: CustomizedTextFieldProps) => {
 
     return (
         <TextField
-            id="outlined-basic"
+            id="filled-basic"
             label="Enter city"
-            variant="outlined"
+            variant="filled"
             size="small"
+            color="secondary"
             InputProps={{
                 endAdornment: (
                     <IconButton onClick={handleButtonClick}>
-                        <SearchOutlinedIcon sx={{ color: 'gray' }} />
+                        <SearchOutlinedIcon sx={{ color: 'black' }} />
                     </IconButton> ),
             }}
             value={props.inputValue}
