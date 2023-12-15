@@ -3,6 +3,18 @@ import { MainWrapper } from "./weather.module";
 import AirIcon from '@mui/icons-material/Air';
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../state/store";
+// import WbSunnyIcon from '@mui/icons-material/WbSunny';
+// import WbCloudyIcon from '@mui/icons-material/WbCloudy';
+// import WaterDropIcon from '@mui/icons-material/WaterDrop';
+// import ThunderstormIcon from '@mui/icons-material/Thunderstorm';
+
+import { MdSunny } from "react-icons/md";
+import { IoIosPartlySunny, IoIosCloudy } from "react-icons/io";
+import { GiSnowing, GiRaining, GiMoonBats } from "react-icons/gi";
+import { IoCloudyNightSharp } from "react-icons/io5";
+import { FaMoon, FaCloudMoonRain } from "react-icons/fa";
+
+import { RiLoaderFill } from "react-icons/ri";
 
 import MainBox from "./MainBox"
 import CustomizedTextField from "./CustomizedTextField"

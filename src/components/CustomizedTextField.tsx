@@ -42,6 +42,13 @@ const CustomizedTextField = (props: CustomizedTextFieldProps) => {
             variant="filled"
             size="small"
             color="secondary"
+            sx={{
+                '@media (max-width: 768px)': {
+                  width: '50%', // Adjust width for smaller screens
+                  fontSize: '12px', // Adjust font size for smaller screens
+                  // Add other responsive styles as needed
+                },
+              }}
             InputProps={{
                 endAdornment: (
                     <IconButton onClick={handleButtonClick}>
