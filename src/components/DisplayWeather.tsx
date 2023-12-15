@@ -4,22 +4,28 @@ import AirIcon from '@mui/icons-material/Air';
 import { WiHumidity } from "react-icons/wi";
 import MainBox from "./MainBox"
 import CustomizedTextField from "./CustomizedTextField"
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../state/store";
 
 const DisplayWeather = () =>
 {
     const [inputValue, setInputValue] = useState("");
     const [displayedCity, setDisplayedCity] = useState("Paris");
 
+    const cityName = useSelector((state: RootState) => state.weather.city);
+    const dispatch = useDispatch<AppDispatch>();
+
     return (
         <div style={{ backgroundColor: '#a6c8ff', height: '100vh', width: '100vw' }}>
             <MainWrapper>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
                 <MainBox>
-                    <CustomizedTextField inputValue={inputValue} setInputValue={setInputValue}
+                    <CustomizedTextField inputValue={inputValue} 
+                                        setInputValue={setInputValue}
                                         setDisplayedCity={setDisplayedCity} />
 
                     <div className="weatherArea">
-                        <h1>{displayedCity}</h1>
+                        <h1>{cityName}</h1>
                         <span>Nz</span>
                         <div className="icon">
                             icon

@@ -2,6 +2,9 @@ import React, {ChangeEvent} from "react";
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import { useDispatch } from "react-redux";
+import { changeCity } from "../state/weather/weatherSlice";
+import { AppDispatch } from "../state/store";
 
 type CustomizedTextFieldProps = {
     inputValue: string;
@@ -10,6 +13,8 @@ type CustomizedTextFieldProps = {
 };
 
 const CustomizedTextField = (props: CustomizedTextFieldProps) => {
+    const dispatch = useDispatch<AppDispatch>();
+    
     const changeInputValue = (event: ChangeEvent<HTMLInputElement>) =>
     {
         props.setInputValue(event.target.value);
@@ -17,7 +22,7 @@ const CustomizedTextField = (props: CustomizedTextFieldProps) => {
 
     const handleButtonClick = () =>
     {
-        props.setDisplayedCity(props.inputValue);
+        dispatch(changeCity(props.inputValue));
         props.setInputValue("");
     };
 
@@ -25,7 +30,7 @@ const CustomizedTextField = (props: CustomizedTextFieldProps) => {
     {
         if (event.key === "Enter")
         {
-            props.setDisplayedCity(props.inputValue);
+            dispatch(changeCity(props.inputValue));
             props.setInputValue("");
         }
     };
