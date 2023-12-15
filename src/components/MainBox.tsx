@@ -15,7 +15,7 @@ const MainBox: React.FC<MainBoxProps> = ({ children }) => {
             borderRadius={10}
             sx={{
                 backgroundColor: '#f0f0f0',
-                backgroundImage: 'url(https://st2.depositphotos.com/1162190/6186/i/450/depositphotos_61868743-stock-photo-weather-forecast-concept.jpg)',
+                // backgroundImage: 'url(https://st2.depositphotos.com/1162190/6186/i/450/depositphotos_61868743-stock-photo-weather-forecast-concept.jpg)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 display: 'flex',
