@@ -5,12 +5,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../state/store";
 
 import { MdSunny } from "react-icons/md";
-import { IoIosPartlySunny, IoIosCloudy } from "react-icons/io";
-import { GiSnowing, GiRaining, GiMoonBats } from "react-icons/gi";
+import { IoIosPartlySunny, IoIosCloudy, IoIosThunderstorm } from "react-icons/io";
+import { GiSnowing, GiRaining, GiMoonBats, GiFog, GiSnowman } from "react-icons/gi";
 import { IoCloudyNightSharp } from "react-icons/io5";
 import { FaMoon, FaCloudMoonRain } from "react-icons/fa";
 
-import { RiLoaderFill } from "react-icons/ri";
+import { RiLoaderFill, RiDrizzleFill } from "react-icons/ri";
 
 import MainBox from "./MainBox"
 import CustomizedTextField from "./CustomizedTextField"
@@ -44,6 +44,7 @@ const DisplayWeather = () =>
     const [inputValue, setInputValue] = useState("");
     const [displayedCity, setDisplayedCity] = useState("Paris");
     const [currentDay, setCurrentDay] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const cityName = useSelector((state: RootState) => state.weather.city);
     const countryName = useSelector((state: RootState) => state.weather.country);
@@ -56,12 +57,77 @@ const DisplayWeather = () =>
     const apiKey: string = (process.env.REACT_APP_API_KEY as string);
     const apiEndpoint: string = (process.env.REACT_APP_API_ENDPOINT as string);
 
+    // weather from the city of my current location
     const fetchCurrentWeather = async (lat: number, lon: number) =>
     {
         const url = `${apiEndpoint}weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
         const response = await axios.get(url);
         return response.data;
     }
+
+    // weather from the city that we entered in the input
+    const fetchWeatherByCity = async(city: string) =>
+    {
+        try {
+            const url = `${apiEndpoint}weather?q=${city}&appid=${apiKey}&units=metric`;
+            const searchResponse = await axios.get(url);
+            return searchResponse.data;
+        } catch (error) {
+            console.error("No data found");
+            throw error;
+        }
+    };
+
+    const handleSearch = async () =>
+    {
+        console.log("HANDLE SEARCH");
+        if (inputValue.trim() === "")
+        {
+            return;
+        }
+
+        try {
+            const {currentSearchResults} = await fetchWeatherByCity(inputValue);
+            dispatch(updateWeatherAsync(currentSearchResults));
+            setInputValue("");
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const iconChanger = (weather: string) =>
+    {
+        let iconElement: React.ReactNode;
+        const iconColor = "black";
+
+        switch(weather) {
+            case "Rain":
+                iconElement = <GiRaining />
+                break ;
+            case "Clear":
+                iconElement = <MdSunny />
+                break ;
+            case "Clouds":
+                iconElement = <IoIosCloudy />
+                break ;
+            case "Mist":
+                iconElement = <GiFog />
+                break ;
+            case "Drizzle":
+                iconElement = <RiDrizzleFill />
+                break ;
+            case "Thunderstorm":
+                iconElement = <IoIosThunderstorm />
+                break ;
+            case "Snow":
+                iconElement = <GiSnowman />
+                break ;
+            default:
+                iconElement = <IoIosPartlySunny />
+        }
+        return (iconElement);
+    };
+
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition((position) =>
@@ -70,7 +136,7 @@ const DisplayWeather = () =>
             Promise.all([fetchCurrentWeather(latitude, longitude)])
             .then(
                 ([currentWeather]) => {
-                    // console.log(currentWeather);
+                    setIsLoading(true);
                     dispatch(updateWeatherAsync(currentWeather));
                 }
             )
@@ -94,40 +160,50 @@ const DisplayWeather = () =>
 
         setCurrentDay(getCurrentDayAndDate());
     }, []);
+
     return (
         <div style={{ backgroundColor: '#a6c8ff', height: '100vh', width: '100vw' }}>
             <MainWrapper>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <MainBox>
-                    <CustomizedTextField inputValue={inputValue} 
-                                        setInputValue={setInputValue}
-                                        setDisplayedCity={setDisplayedCity} />
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                    <MainBox>
+                        <CustomizedTextField inputValue={inputValue} 
+                                            setInputValue={setInputValue}
+                                            setDisplayedCity={setDisplayedCity}
+                                            handleSearch={handleSearch} />
 
-                    {/* Middle part */}
-                    <div>
-                        <div>{currentDay}</div>
-                        <div>{cityName}</div>
-                        <span>{countryName}</span>
+                        {/* Middle part */}
+                        {isLoading ? (
+                        <>
                         <div>
-                            icon
-                        </div>
-                        <div>{temperature}</div>
-                        <div>{weatherState}</div>
-                        <br />
-                    </div>
-
-                    {/* Bottom part */}
-                    <div>
-
-                        <div>
-                            <AirIcon />
+                            <div>{currentDay}</div>
+                            <div>{cityName}</div>
+                            <span>{countryName}</span>
                             <div>
-                                <div>{windSpeed}</div>
-                                <p>Wind speed</p>
+                                {iconChanger(weatherState)}
+                            </div>
+                            <div>{temperature}°C</div>
+                            <div>{weatherState}</div>
+                            <br />
+                        </div>
+
+                        {/* Bottom part */}
+                        <div>
+
+                            <div>
+                                <AirIcon />
+                                <div>
+                                    <div>{windSpeed}</div>
+                                    <p>Wind speed</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </MainBox>
+                        </>) : (
+                            <div>
+                               <RiLoaderFill />
+                               <p>Loading</p> 
+                            </div>
+                        )}
+                    </MainBox>
                 </div>
             </MainWrapper>
         </div>

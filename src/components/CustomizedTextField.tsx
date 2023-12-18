@@ -1,4 +1,4 @@
-import React, {ChangeEvent} from "react";
+import React, {ChangeEvent, useState} from "react";
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
@@ -10,28 +10,33 @@ type CustomizedTextFieldProps = {
     inputValue: string;
     setInputValue: React.Dispatch<React.SetStateAction<string>>;
     setDisplayedCity: React.Dispatch<React.SetStateAction<string>>;
+    handleSearch: () => void;
 };
 
 const CustomizedTextField = (props: CustomizedTextFieldProps) => {
     const dispatch = useDispatch<AppDispatch>();
+    const [tmpValue, setTmpValue] = useState("");
     
     const changeInputValue = (event: ChangeEvent<HTMLInputElement>) =>
     {
-        props.setInputValue(event.target.value);
+        setTmpValue(event.target.value);
     };
 
     const handleButtonClick = () =>
     {
-        dispatch(changeCity(props.inputValue));
-        props.setInputValue("");
+        // dispatch(changeCity(props.inputValue));
+        props.setInputValue(tmpValue);
+        props.handleSearch();
     };
 
     const handleEnter = (event: React.KeyboardEvent) =>
     {
         if (event.key === "Enter")
         {
-            dispatch(changeCity(props.inputValue));
-            props.setInputValue("");
+            console.log("ENTER");
+            // dispatch(changeCity(props.inputValue));
+            props.setInputValue(tmpValue);
+            props.handleSearch();
         }
     };
 
@@ -55,7 +60,7 @@ const CustomizedTextField = (props: CustomizedTextFieldProps) => {
                         <SearchOutlinedIcon sx={{ color: 'black' }} />
                     </IconButton> ),
             }}
-            value={props.inputValue}
+            value={tmpValue}
             onChange={changeInputValue}
             onKeyDown={handleEnter}
         />
