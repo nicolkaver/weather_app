@@ -19,17 +19,61 @@ import { RiLoaderFill } from "react-icons/ri";
 import MainBox from "./MainBox"
 import CustomizedTextField from "./CustomizedTextField"
 
+import axios from "axios";
+import { updateWeatherAsync } from "../state/weather/weatherSlice";
+
+interface WeatherDataTypes {
+    name: string,
+    main: {
+        temp: number,
+        humidity: number,
+        feels_like: number,
+    },
+    sys: {
+        country: string,
+    },
+    weather: {
+        main: string,
+    }[],
+    wind: {
+        speed: number,
+    },
+}
+
 const DisplayWeather = () =>
 {
     // USE STATES
     const [inputValue, setInputValue] = useState("");
     const [displayedCity, setDisplayedCity] = useState("Paris");
     const [currentDay, setCurrentDay] = useState("");
+    const [weatherData, setWeatherData] = useState<WeatherDataTypes | null>();
 
     const cityName = useSelector((state: RootState) => state.weather.city);
     const dispatch = useDispatch<AppDispatch>();
 
+    const api_key = "53939ec5aacd4bbfb0a7bb8ce3e2a852";
+    const api_endpoint = "https://api.openweathermap.org/data/2.5/";
+
+    const fetchCurrentWeather = async (lat: number, lon: number) =>
+    {
+        const url = `${api_endpoint}weather?lat=${lat}&lon=${lon}&appid=${api_key}&units=metric`
+        const response = await axios.get(url);
+        return response.data;
+    }
+
     useEffect(() => {
+        navigator.geolocation.getCurrentPosition((position) =>
+        {
+            const {latitude, longitude} = position.coords;
+            Promise.all([fetchCurrentWeather(latitude, longitude)])
+            .then(
+                ([currentWeather]) => {
+                    // console.log(currentWeather);
+                    dispatch(updateWeatherAsync(currentWeather));
+                }
+            )
+        })
+
         const getCurrentDayAndDate = () =>
         {
             const currentDate: Date = new Date();
