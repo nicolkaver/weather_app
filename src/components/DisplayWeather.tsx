@@ -3,10 +3,6 @@ import { MainWrapper } from "./weather.module";
 import AirIcon from '@mui/icons-material/Air';
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../state/store";
-// import WbSunnyIcon from '@mui/icons-material/WbSunny';
-// import WbCloudyIcon from '@mui/icons-material/WbCloudy';
-// import WaterDropIcon from '@mui/icons-material/WaterDrop';
-// import ThunderstormIcon from '@mui/icons-material/Thunderstorm';
 
 import { MdSunny } from "react-icons/md";
 import { IoIosPartlySunny, IoIosCloudy } from "react-icons/io";
@@ -20,6 +16,8 @@ import MainBox from "./MainBox"
 import CustomizedTextField from "./CustomizedTextField"
 
 import axios from "axios";
+import * as dotenv from "dotenv";
+import fs from 'fs';
 import { updateWeatherAsync } from "../state/weather/weatherSlice";
 
 interface WeatherDataTypes {
@@ -46,17 +44,21 @@ const DisplayWeather = () =>
     const [inputValue, setInputValue] = useState("");
     const [displayedCity, setDisplayedCity] = useState("Paris");
     const [currentDay, setCurrentDay] = useState("");
-    const [weatherData, setWeatherData] = useState<WeatherDataTypes | null>();
 
     const cityName = useSelector((state: RootState) => state.weather.city);
+    const countryName = useSelector((state: RootState) => state.weather.country);
+    const temperature = useSelector((state: RootState) => state.weather.temp);
+    const weatherState = useSelector((state: RootState) => state.weather.weather[0].main);
+    const windSpeed = useSelector((state: RootState) => state.weather.windSpeed);
+
     const dispatch = useDispatch<AppDispatch>();
 
-    const api_key = "53939ec5aacd4bbfb0a7bb8ce3e2a852";
-    const api_endpoint = "https://api.openweathermap.org/data/2.5/";
+    const apiKey: string = (process.env.REACT_APP_API_KEY as string);
+    const apiEndpoint: string = (process.env.REACT_APP_API_ENDPOINT as string);
 
     const fetchCurrentWeather = async (lat: number, lon: number) =>
     {
-        const url = `${api_endpoint}weather?lat=${lat}&lon=${lon}&appid=${api_key}&units=metric`
+        const url = `${apiEndpoint}weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
         const response = await axios.get(url);
         return response.data;
     }
@@ -105,12 +107,12 @@ const DisplayWeather = () =>
                     <div>
                         <div>{currentDay}</div>
                         <div>{cityName}</div>
-                        <span>Country</span>
+                        <span>{countryName}</span>
                         <div>
                             icon
                         </div>
-                        <div>18C</div>
-                        <div>cloudy</div>
+                        <div>{temperature}</div>
+                        <div>{weatherState}</div>
                         <br />
                     </div>
 
@@ -120,7 +122,7 @@ const DisplayWeather = () =>
                         <div>
                             <AirIcon />
                             <div>
-                                <div>2.55 km/h</div>
+                                <div>{windSpeed}</div>
                                 <p>Wind speed</p>
                             </div>
                         </div>
