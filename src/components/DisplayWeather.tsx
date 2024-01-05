@@ -71,26 +71,28 @@ const DisplayWeather = () =>
         try {
             const url = `${apiEndpoint}weather?q=${city}&appid=${apiKey}&units=metric`;
             const searchResponse = await axios.get(url);
-            return searchResponse.data;
+            const currentSearchResults: WeatherDataTypes = searchResponse.data; 
+            return {currentSearchResults};
         } catch (error) {
             console.error("No data found");
             throw error;
         }
     };
 
-    const handleSearch = async () =>
+    const handleSearch = async (city: string) =>
     {
-        console.log("HANDLE SEARCH");
-        if (inputValue.trim() === "")
+        if (city.trim() === "")
         {
+            console.log("Error: The input was empty");
             return;
         }
 
         try {
-            const {currentSearchResults} = await fetchWeatherByCity(inputValue);
+            const {currentSearchResults} = await fetchWeatherByCity(city);
             dispatch(updateWeatherAsync(currentSearchResults));
             setInputValue("");
-        } catch (error) {
+        } catch (error)
+        {
             console.log(error);
         }
     };
@@ -140,7 +142,7 @@ const DisplayWeather = () =>
                     dispatch(updateWeatherAsync(currentWeather));
                 }
             )
-        })
+        });
 
         const getCurrentDayAndDate = () =>
         {
@@ -166,9 +168,7 @@ const DisplayWeather = () =>
             <MainWrapper>
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
                     <MainBox>
-                        <CustomizedTextField inputValue={inputValue} 
-                                            setInputValue={setInputValue}
-                                            setDisplayedCity={setDisplayedCity}
+                        <CustomizedTextField setDisplayedCity={setDisplayedCity}
                                             handleSearch={handleSearch} />
 
                         {/* Middle part */}

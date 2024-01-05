@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useState} from "react";
+import React, {ChangeEvent, useState, useRef, useEffect} from "react";
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
@@ -7,16 +7,14 @@ import { changeCity } from "../state/weather/weatherSlice";
 import { AppDispatch } from "../state/store";
 
 type CustomizedTextFieldProps = {
-    inputValue: string;
-    setInputValue: React.Dispatch<React.SetStateAction<string>>;
     setDisplayedCity: React.Dispatch<React.SetStateAction<string>>;
-    handleSearch: () => void;
+    handleSearch: (city: string) => void;
 };
 
 const CustomizedTextField = (props: CustomizedTextFieldProps) => {
     const dispatch = useDispatch<AppDispatch>();
     const [tmpValue, setTmpValue] = useState("");
-    
+
     const changeInputValue = (event: ChangeEvent<HTMLInputElement>) =>
     {
         setTmpValue(event.target.value);
@@ -24,19 +22,16 @@ const CustomizedTextField = (props: CustomizedTextFieldProps) => {
 
     const handleButtonClick = () =>
     {
-        // dispatch(changeCity(props.inputValue));
-        props.setInputValue(tmpValue);
-        props.handleSearch();
+        props.handleSearch(tmpValue);
+        setTmpValue("");
     };
 
     const handleEnter = (event: React.KeyboardEvent) =>
     {
         if (event.key === "Enter")
         {
-            console.log("ENTER");
-            // dispatch(changeCity(props.inputValue));
-            props.setInputValue(tmpValue);
-            props.handleSearch();
+            props.handleSearch(tmpValue);
+            setTmpValue("");
         }
     };
 
