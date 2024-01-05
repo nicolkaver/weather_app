@@ -9,15 +9,15 @@ import { IoIosPartlySunny, IoIosCloudy, IoIosThunderstorm } from "react-icons/io
 import { GiSnowing, GiRaining, GiMoonBats, GiFog, GiSnowman } from "react-icons/gi";
 import { IoCloudyNightSharp } from "react-icons/io5";
 import { FaMoon, FaCloudMoonRain } from "react-icons/fa";
-
 import { RiLoaderFill, RiDrizzleFill } from "react-icons/ri";
 
 import MainBox from "./MainBox"
 import CustomizedTextField from "./CustomizedTextField"
+import { Dialog, DialogActions, IconButton, Alert } from "@mui/material";
+import CancelIcon from '@material-ui/icons/Cancel';
+import { makeStyles } from '@mui/styles';
 
-import axios from "axios";
-import * as dotenv from "dotenv";
-import fs from 'fs';
+import axios, { AxiosError } from "axios";
 import { updateWeatherAsync } from "../state/weather/weatherSlice";
 
 interface WeatherDataTypes {
@@ -38,13 +38,29 @@ interface WeatherDataTypes {
     },
 }
 
+const useStyles = makeStyles({
+    errorAlert: {
+        '& .MuiPaper-root': {
+            backgroundColor: 'red',
+        },
+    },
+    redIcon: {
+        color: "black",
+        cursor: "pointer",
+        '&:hover': {
+            textDecoration: 'underline',
+        },
+    },
+})
+
 const DisplayWeather = () =>
 {
     // USE STATES
-    const [inputValue, setInputValue] = useState("");
     const [displayedCity, setDisplayedCity] = useState("Paris");
     const [currentDay, setCurrentDay] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
 
     const cityName = useSelector((state: RootState) => state.weather.city);
     const countryName = useSelector((state: RootState) => state.weather.country);
@@ -53,6 +69,8 @@ const DisplayWeather = () =>
     const windSpeed = useSelector((state: RootState) => state.weather.windSpeed);
 
     const dispatch = useDispatch<AppDispatch>();
+
+    const classes = useStyles();
 
     const apiKey: string = (process.env.REACT_APP_API_KEY as string);
     const apiEndpoint: string = (process.env.REACT_APP_API_ENDPOINT as string);
@@ -68,15 +86,41 @@ const DisplayWeather = () =>
     // weather from the city that we entered in the input
     const fetchWeatherByCity = async(city: string) =>
     {
-        try {
+        try
+        {
             const url = `${apiEndpoint}weather?q=${city}&appid=${apiKey}&units=metric`;
             const searchResponse = await axios.get(url);
             const currentSearchResults: WeatherDataTypes = searchResponse.data; 
             return {currentSearchResults};
-        } catch (error) {
-            console.error("No data found");
+        } 
+        catch (error: unknown)
+        {
+            if (axios.isAxiosError(error))
+            {
+                if (error.response && error.response.status === 404)
+                {
+                    handleCityNotFound();
+                }
+            }
             throw error;
         }
+    };
+
+    const handleCityNotFound = () =>
+    {
+        handleErrorAlert("City not found :(");
+    };
+
+    const handleErrorAlert = (message: string) =>
+    {
+        setErrorMessage(message);
+        setShowErrorAlert(true);
+    };
+
+    const handleCloseErrorAlert = () =>
+    {
+        setShowErrorAlert(false);
+        setErrorMessage("");
     };
 
     const handleSearch = async (city: string) =>
@@ -87,13 +131,13 @@ const DisplayWeather = () =>
             return;
         }
 
-        try {
+        try
+        {
             const {currentSearchResults} = await fetchWeatherByCity(city);
             dispatch(updateWeatherAsync(currentSearchResults));
-            setInputValue("");
-        } catch (error)
+        }
+        catch (_error)
         {
-            console.log(error);
         }
     };
 
@@ -168,9 +212,26 @@ const DisplayWeather = () =>
             <MainWrapper>
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
                     <MainBox>
-                        <CustomizedTextField setDisplayedCity={setDisplayedCity}
-                                            handleSearch={handleSearch} />
-
+                        <CustomizedTextField handleSearch={handleSearch} />
+                        <Dialog open={showErrorAlert}
+                                onClose={handleCloseErrorAlert}
+                                maxWidth="sm"
+                                // className={classes.errorAlert}
+                                PaperProps={{
+                                    sx: {
+                                        backgroundColor: '#FFC0CB',
+                                        border: '2px solid red',
+                                    },
+                                }}
+                                >
+                            <DialogActions>
+                                <div>
+                                    {errorMessage}
+                                </div>
+                                <CancelIcon onClick={handleCloseErrorAlert}
+                                            className={classes.redIcon} />
+                            </DialogActions>
+                        </Dialog>
                         {/* Middle part */}
                         {isLoading ? (
                         <>

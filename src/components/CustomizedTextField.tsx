@@ -7,7 +7,6 @@ import { changeCity } from "../state/weather/weatherSlice";
 import { AppDispatch } from "../state/store";
 
 type CustomizedTextFieldProps = {
-    setDisplayedCity: React.Dispatch<React.SetStateAction<string>>;
     handleSearch: (city: string) => void;
 };
 
