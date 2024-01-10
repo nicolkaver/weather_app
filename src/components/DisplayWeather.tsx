@@ -1,4 +1,4 @@
-import React, {useState, ChangeEvent, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import { MainWrapper } from "./weather.module";
 import AirIcon from '@mui/icons-material/Air';
 import { useDispatch, useSelector } from "react-redux";
@@ -11,10 +11,10 @@ import { IoCloudyNightSharp } from "react-icons/io5";
 import { FaMoon, FaCloudMoonRain } from "react-icons/fa";
 import { RiLoaderFill, RiDrizzleFill } from "react-icons/ri";
 
-import MainBox from "./MainBox"
-import CustomizedTextField from "./CustomizedTextField"
-import { Dialog, DialogActions, IconButton, Alert } from "@mui/material";
-import CancelIcon from '@material-ui/icons/Cancel';
+import MainBox from "./MainBox";
+import CustomizedTextField from "./CustomizedTextField";
+import ErrorAlert from "./ErrorAlert";
+import { Grid } from "@mui/material";
 import { makeStyles } from '@mui/styles';
 
 import axios, { AxiosError } from "axios";
@@ -40,18 +40,21 @@ interface WeatherDataTypes {
 
 const useStyles = makeStyles({
     errorAlert: {
-        '& .MuiPaper-root': {
-            backgroundColor: 'red',
-        },
+        // '& .MuiPaper-root': {
+        //     backgroundColor: '#FFC0CB',
+        // },
+        backgroundColor: '#FFC0CB',
+        margin: '0.5em',
+        padding: '1em',
     },
-    redIcon: {
+    cancelIcon: {
         color: "black",
         cursor: "pointer",
-        '&:hover': {
-            textDecoration: 'underline',
-        },
+        // '&:hover': {
+        //     textDecoration: 'underline',
+        // },
     },
-})
+});
 
 const DisplayWeather = () =>
 {
@@ -213,52 +216,43 @@ const DisplayWeather = () =>
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
                     <MainBox>
                         <CustomizedTextField handleSearch={handleSearch} />
-                        <Dialog open={showErrorAlert}
-                                onClose={handleCloseErrorAlert}
-                                maxWidth="sm"
-                                // className={classes.errorAlert}
-                                PaperProps={{
-                                    sx: {
-                                        backgroundColor: '#FFC0CB',
-                                        border: '2px solid red',
-                                    },
-                                }}
-                                >
-                            <DialogActions>
-                                <div>
-                                    {errorMessage}
-                                </div>
-                                <CancelIcon onClick={handleCloseErrorAlert}
-                                            className={classes.redIcon} />
-                            </DialogActions>
-                        </Dialog>
+                        <ErrorAlert errorMessage={errorMessage} 
+                                    classes={classes}
+                                    showErrorAlert={showErrorAlert}
+                                    handleCloseErrorAlert={handleCloseErrorAlert}
+                                     />
                         {/* Middle part */}
                         {isLoading ? (
-                        <>
-                        <div>
-                            <div>{currentDay}</div>
-                            <div>{cityName}</div>
-                            <span>{countryName}</span>
+                            <>
                             <div>
-                                {iconChanger(weatherState)}
+                                <Grid>
+                                    <div>{currentDay}</div>
+                                    <div>{cityName}</div>
+                                    <span>{countryName}</span>
+                                </Grid>
+                                <br />
+                                <Grid>
+                                    <div>
+                                        {iconChanger(weatherState)}
+                                    </div>
+                                    <div>{temperature}°C</div>
+                                    <div>{weatherState}</div>
+                                </Grid>
+                                <br />
                             </div>
-                            <div>{temperature}°C</div>
-                            <div>{weatherState}</div>
-                            <br />
-                        </div>
 
-                        {/* Bottom part */}
-                        <div>
-
+                            {/* Bottom part */}
                             <div>
-                                <AirIcon />
+
                                 <div>
-                                    <div>{windSpeed}</div>
-                                    <p>Wind speed</p>
+                                    <AirIcon />
+                                    <div>
+                                        <div>{windSpeed}</div>
+                                        <p>Wind speed</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        </>) : (
+                            </>) : (
                             <div>
                                <RiLoaderFill />
                                <p>Loading</p> 

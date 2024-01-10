@@ -1,5 +1,6 @@
 import React, {ReactNode} from "react";
 import Box from '@mui/material/Box';
+import { Grid } from "@mui/material";
 
 interface MainBoxProps {
     children: ReactNode;
@@ -7,7 +8,7 @@ interface MainBoxProps {
 
 const MainBox: React.FC<MainBoxProps> = ({ children }) => {
     return (
-        <Box
+        <Grid
             component="div"
             width="400px"
             height="600px"
@@ -32,7 +33,7 @@ const MainBox: React.FC<MainBoxProps> = ({ children }) => {
             }}
         >
             {children}
-        </Box>
+        </Grid>
     );
 };
 
