@@ -4,7 +4,6 @@ import DisplayWeather from './components/DisplayWeather';
 // import * as dotenv from "dotenv";
 
 // dotenv.config();
-// test
 
 function App() {
   return (
